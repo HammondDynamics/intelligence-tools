@@ -1,0 +1,12 @@
+.env
+*.json
+*.log
+*.log.*
+__pycache__/
+venv/
+*.tmp
+
+# ShadowVector Specific
+.venv/
+scans.db
+cve_data/

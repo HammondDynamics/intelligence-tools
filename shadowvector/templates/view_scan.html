@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Scan Details</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0
+        }
+
+        th,
+        td {
+            border: 1px solid #555;
+            padding: 10px;
+            text-align: left
+        }
+
+        th {
+            background: #3c3c3c
+        }
+
+        pre {
+            background: #000;
+            padding: 15px;
+            border: 1px solid #555;
+            overflow-x: auto
+        }
+
+        .critical {
+            background: #ff0000;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold
+        }
+
+        .high {
+            background: #ff6600;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold
+        }
+
+        .medium {
+            background: #ffcc00;
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold
+        }
+
+        .low {
+            background: #00cc00;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold
+        }
+
+        a {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            text-decoration: none;
+            display: inline-block
+        }
+
+        a:hover {
+            background: #555
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Scan Details: {{ scan.target }}</h1>
+        <p>Date: {{ scan.scan_date.strftime('%Y-%m-%d %H:%M:%S') }} | Policy: {{ scan.policy }}</p>
+        <a href="/history">Back to History</a>
+        <a href="/">New Scan</a>
+        <hr>
+        <h2>Nmap Scan Results</h2>
+        <table>
+            <tr>
+                <th>Port</th>
+                <th>Service</th>
+                <th>Version</th>
+                <th>CVEs</th>
+            </tr>
+            {% for port in data.ports %}
+            <tr>
+                <td>{{ port.port_id }}</td>
+                <td>{{ port.service_name }}</td>
+                <td>{{ port.version }}</td>
+                <td>
+                    {% if port.cves %}
+                    {% for cve in port.cves %}
+                    {% if cve.id %}
+                    {{ cve.id }} <span class="{{ cve.severity.lower() }}">{{ cve.severity }}</span> ({{ cve.score
+                    }})<br>
+                    {% endif %}
+                    {% endfor %}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% if data.nikto_output %}
+        <h2>Nikto Results</h2>
+        <pre>{{ data.nikto_output }}</pre>
+        {% endif %}
+        {% if data.gobuster_output %}
+        <h2>GoBuster Results</h2>
+        <pre>{{ data.gobuster_output }}</pre>
+        {% endif %}
+        {% if data.sqlmap_output %}
+        <h2>SQLMap Results</h2>
+        <pre>{{ data.sqlmap_output }}</pre>
+        {% endif %}
+    </div>
+</body>
+
+</html>

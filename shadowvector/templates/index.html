@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ShadowVector Scanner</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            margin: 0;
+            padding: 20px
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto
+        }
+
+        input,
+        select,
+        button {
+            padding: 8px;
+            margin: 5px 0;
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            width: 100%;
+            box-sizing: border-box
+        }
+
+        button {
+            cursor: pointer;
+            width: auto;
+            padding: 10px 20px
+        }
+
+        button:hover {
+            background: #555
+        }
+
+        h1 {
+            color: #64ffda
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ShadowVector Automated Scanner</h1>
+        <form action="/scan" method="post">
+            <label>Target IP Address:</label>
+            <input type="text" name="target_ip" placeholder="e.g., 192.168.44.129" required>
+            <label>Scan Policy:</label>
+            <select name="scan_policy">
+                <option value="fast">Fast Scan</option>
+                <option value="normal" selected>Normal Scan</option>
+                <option value="comprehensive">Comprehensive Scan</option>
+            </select>
+            <button type="submit">Start Scan</button>
+        </form>
+        <br>
+        <a href="/history"
+            style="display:inline-block;padding:10px;background:#3c3c3c;border:1px solid #555;text-decoration:none;color:#d4d4d4">View
+            Scan History</a>
+
+    </div>
+</body>
+
+</html>

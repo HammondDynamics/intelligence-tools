@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ShadowVector Results</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            margin: 0;
+            padding: 20px
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0
+        }
+
+        th,
+        td {
+            border: 1px solid #555;
+            padding: 10px;
+            text-align: left
+        }
+
+        th {
+            background: #3c3c3c
+        }
+
+        pre {
+            background: #000;
+            padding: 15px;
+            border: 1px solid #555;
+            overflow-x: auto
+        }
+
+        #status {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #64ffda
+        }
+
+        .critical {
+            background: #ff0000;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold
+        }
+
+        .high {
+            background: #ff6600;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold
+        }
+
+        .medium {
+            background: #ffcc00;
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold
+        }
+
+        .low {
+            background: #00cc00;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold
+        }
+
+        button,
+        a {
+            padding: 10px 15px;
+            margin: 5px;
+            text-decoration: none;
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            cursor: pointer;
+            display: inline-block
+        }
+
+        button:hover,
+        a:hover {
+            background: #555
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ShadowVector Scan: {{target}}</h1>
+        <p id="status">Status: Checking...</p>
+        <a href="/">New Scan</a>
+        <button onclick="location.href='/download-report/{{task_id}}'">Download Report</button>
+        <hr>
+        <div id="r"></div>
+    </div>
+    <script>
+        function check() {
+            fetch('/status/{{task_id}}').then(r => r.json()).then(d => {
+                document.getElementById('status').innerText = 'Status: ' + d.status;
+                if (d.state === 'SUCCESS' && d.result) {
+                    let x = d.result, h = '<h2>Nmap Scan Results</h2><table><tr><th>Port</th><th>Service</th><th>Version</th><th>CVEs</th></tr>';
+                    x.ports.forEach(p => {
+                        let c = '-';
+                        if (p.cves && p.cves.length > 0 && p.cves[0].id) {
+                            c = p.cves.map(v => `${v.id} <span class="${v.severity.toLowerCase()}">${v.severity}</span> (${v.score})`).join('<br>');
+                        }
+                        h += `<tr><td>${p.port_id}</td><td>${p.service_name}</td><td>${p.version}</td><td>${c}</td></tr>`;
+                    });
+                    h += '</table>';
+                    if (x.nikto_output) h += `<h2>Nikto Results</h2><pre>${x.nikto_output}</pre>`;
+                    if (x.gobuster_output) h += `<h2>GoBuster Results</h2><pre>${x.gobuster_output}</pre>`;
+                    if (x.sqlmap_output) h += `<h2>SQLMap Results</h2><pre>${x.sqlmap_output}</pre>`;
+                    document.getElementById('r').innerHTML = h;
+                } else if (d.state !== 'FAILURE') {
+                    setTimeout(check, 3000);
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', check);
+    </script>
+</body>
+
+</html>

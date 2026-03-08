@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Scan History</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0
+        }
+
+        th,
+        td {
+            border: 1px solid #555;
+            padding: 10px;
+            text-align: left
+        }
+
+        th {
+            background: #3c3c3c
+        }
+
+        a {
+            color: #64ffda;
+            text-decoration: none
+        }
+
+        a:hover {
+            text-decoration: underline
+        }
+
+        .critical {
+            color: #ff0000;
+            font-weight: bold
+        }
+
+        button,
+        a.btn {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            cursor: pointer;
+            display: inline-block;
+            text-decoration: none
+        }
+
+        button:hover,
+        a.btn:hover {
+            background: #555
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ShadowVector - Scan History</h1>
+        <a href="/" class="btn">New Scan</a>
+        <hr>
+        {% if scans %}
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Target</th>
+                <th>Policy</th>
+                <th>Ports Found</th>
+                <th>Critical Vulns</th>
+                <th>Action</th>
+            </tr>
+            {% for scan in scans %}
+            <tr>
+                <td>{{ scan.scan_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ scan.target }}</td>
+                <td>{{ scan.policy }}</td>
+                <td>{{ scan.ports_found }}</td>
+                <td class="{% if scan.critical_vulns > 0 %}critical{% endif %}">{{ scan.critical_vulns }}</td>
+                <td><a href="/view-scan/{{ scan.id }}">View Details</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No scans found. Run your first scan to get started.</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>
